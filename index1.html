@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="selectBox" style="border: 1px solid orange;background: none; position:absolute; pointer-events: none; display: none; z-index: 1000;"></div>
+    
+    <div id = "container" style="height:90vh; width :90vw; background-color: hsl(0, 29%, 95%); position: relative;">
+        <div>
+            <button type="button" id="add">생성 </button>
+            <button type="button" id="remove">제거 </button>
+            <button type="button" id="removeAll">일괄 제거 </button>
+        </div>
+        <div id="moveableContainer" style="width: 80vw; height: 80vh;">
+            <!-- <div class = "moveable" style = "background-color: burlywood;width:200px; height : 200px; position: absolute;top:20px; left : 400px">이동시켜보세요</div>
+            <div class = "moveable" style = "background-color: rgb(214, 62, 31);width:200px; height : 200px; position: absolute;top:20px; left : 400px">이동시켜보세요</div>
+            <div class = "moveable" style = "background-color: rgb(9, 2, 5);width:200px; height : 200px; position: absolute;top:20px; left : 400px">이동시켜보세요</div> -->
+        </div>
+    </div>
+
+    
+</body>
+<script>
+    var moveables = document.querySelectorAll(".moveable");
+    var moveableContainer = document.querySelector("#moveableContainer");
+
+    var addBtn = document.getElementById("add");
+    var removeBtn = document.getElementById("remove");
+    var removeAll = document.getElementById("removeAll");
+
+    var dragging = false;
+    var offsetX, offsetY; // 마우스 누른 지점 (이벤트 발생 위치임)
+    
+    var multiDragging = false;
+    var beforeX, beforeY; // 드래그 시작 지점
+
+    var select;
+    var addDoms = [];
+    var selectedDoms = [];
+    
+    var selectBox = document.getElementById("selectBox");
+    var isSelecting = false;
+    var startX, startY; // 불투명네모박스?시작점
+
+    // var mode;
+    // var modeStatus = {
+    //     SINGLE_SEELECT :1,
+    //     MUTIPLE_SELECT : 2};
+    
+    // 1: 단일 선택상태, 2 다중선택상태
+    
+    removeAll.addEventListener("click", function(e) {
+        selectedDoms.forEach(element => {
+            element.remove();
+        })
+        selectedDoms = [];
+    })
+    
+    document.addEventListener("mousedown", (e)=>{
+        if (e.ctrlKey && selectedDoms.length > 0) {
+        multiDragging = true;
+        multiDragging = true;
+        //clientX, clientY : 현재 위치
+        beforeX = e.clientX;
+        beforeY = e.clientY;
+
+        selectedDoms.forEach(el => {
+            el.dataset.startLeft = parseInt(el.style.left);
+            el.dataset.startTop = parseInt(el.style.top);
+        });
+        return;
+    }
+    multiDragging = false;
+
+    if (
+        selectedDoms.length > 0 &&
+        !e.target.classList.contains("moveable") &&
+        !e.target.closest(".moveable")
+    ) {
+        selectedDoms.forEach(el => el.style.border = "none");
+        selectedDoms = [];
+    }
+
+    if (select) {
+        select.style.border = "none";
+        select = null;
+    }
+        
+    });
+
+    document.addEventListener("mousemove", function(e) {
+        if (multiDragging) {
+            var distanceX = e.clientX - beforeX;
+            var distanceY = e.clientY - beforeY;
+
+            selectedDoms.forEach(el => {
+                let startLeft = parseInt(el.dataset.startLeft);
+                let startTop = parseInt(el.dataset.startTop);
+                el.style.left = (startLeft + distanceX) + "px";
+                el.style.top = (startTop + distanceY) + "px";
+            });
+        }
+
+        if (dragging && select){
+            select.style.top = (e.clientY - offsetY) + "px";
+            select.style.left = (e.clientX - offsetX) + "px";
+        }
+    })
+
+    document.addEventListener("mouseup", function(e) {
+        dragging = false;
+        multiDragging = false;
+
+        if (isSelecting) {
+            isSelecting = false;
+            selectBox.style.display = "none";
+
+            // if (selectedDoms.length > 0 && e.target === moveableContainer) {
+            //     selectedDoms.forEach(el => el.style.border = "none");
+            //     selectedDoms = [];
+            // }
+        }
+    });
+
+    addBtn.addEventListener("click", function(e){
+        var r = parseInt(Math.random()*255);
+        var g = parseInt(Math.random()*255);
+        var b = parseInt(Math.random()*255);
+        var width = parseInt(Math.random()*300);
+        var height = parseInt(Math.random()*300);
+        var location = parseInt(Math.random()*700);
+        var newDiv = document.createElement("div");
+        newDiv.classList.add("moveable");
+        newDiv.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        newDiv.style.width = Math.max(100, width) + "px";
+        newDiv.style.height = Math.max(100, height) + "px";
+        newDiv.style.position = "absolute";
+        newDiv.style.top = location + "px";
+        newDiv.style.left = location + "px";
+        newDiv.innerText = "새로운 div";
+        
+        newDiv.addEventListener("mousedown", function(e) {
+            if(e.ctrlKey) {
+                if (!selectedDoms.includes(newDiv)) {
+                    selectedDoms.push(newDiv);
+                    newDiv.style.border = "5px orange dashed";
+                }
+                return;    
+            }
+            else {
+                if (select){
+                    dragging = true;
+                    select.style.border = "none";
+                    select = null;
+                }
+
+                e.stopPropagation();
+
+                if (selectedDoms.length > 0){
+                    selectedDoms.forEach(element => {
+                        element.style.border = "none";
+                    });
+                    selectedDoms = [];
+                }
+
+                dragging = true;
+                newDiv.style.cursor = "grabbing";
+                newDiv.style.border= "4px green dashed";
+                
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+                select = e.target;
+
+            }
+        });    
+        addDoms.push(newDiv);
+        moveableContainer.appendChild(newDiv);
+    })
+
+    removeBtn.addEventListener("click", function(){
+        selectedDoms.forEach(el => {
+            el.remove();
+        });
+        selectedDoms = [];
+        select = null;
+        dragging = false;
+    });
+
+    //네모불투명박스?
+    //마우스 누를 때
+    moveableContainer.addEventListener("mousedown", function(e){
+       if (e.target !== moveableContainer) return;
+        if(e.ctrlKey) return;
+
+        isSelecting = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        selectBox.style.left = startX + "px";
+        selectBox.style.top = startY + "px";
+        selectBox.style.width = "0px";
+        selectBox.style.height = "0px";
+        selectBox.style.display = "block";
+
+        selectedDoms.forEach(e =>
+            e.style.border = "none"
+        );
+        selectedDoms = [];
+    })
+
+    // 마우스 움직일 때
+    moveableContainer.addEventListener("mousemove", function(e){
+        if(!isSelecting) return; 
+
+        var currentX = e.clientX;
+        var currentY = e.clientY;
+        var deltaX = currentX - startX; 
+        var deltaY = currentY - startY; 
+        var top, left;
+
+        if ( currentX >= startX && currentY >=startY  ){
+            selectBox.style.left = startX + "px";
+            selectBox.style.top = startY + "px";
+            selectBox.style.width =  deltaX+ "px";
+            selectBox.style.height = deltaY+ "px";
+        }
+
+        if ( currentX <= startX && currentY <= startY  ){
+            top = (startX - currentX);
+            left =  (startY - currentY);
+            selectBox.style.left = (startX - Math.abs(deltaX) )+ "px";
+            selectBox.style.top = (startY- Math.abs(deltaY)) +  "px";
+            selectBox.style.width =  Math.abs(deltaX) + "px";
+            selectBox.style.height = Math.abs(deltaY) + "px";
+        }
+
+        if ( currentX >= startX && currentY <= startY  ){
+            selectBox.style.left = startX + "px";
+            selectBox.style.top = currentY + "px";
+            selectBox.style.width = Math.abs(deltaX) + "px";
+            selectBox.style.height = Math.abs(deltaY) + "px";
+        }
+
+        if ( currentX <= startX && currentY >= startY  ){
+            selectBox.style.left = currentX + "px";
+            selectBox.style.top = startY + "px";
+            selectBox.style.width = Math.abs(deltaX) + "px";
+            selectBox.style.height = Math.abs(deltaY) + "px";
+        }
+        
+        //다 빼기
+
+
+
+
+        var boxRect = selectBox.getBoundingClientRect();    //투명네모박스위치정보
+
+        document.querySelectorAll(".moveable").forEach(moveable => {
+            var eRect = moveable.getBoundingClientRect();   //div요소좌표정보
+            
+            if(
+            eRect.left >= boxRect.left && 
+            eRect.right <= boxRect.right && 
+            eRect.top >= boxRect.top && 
+            eRect.bottom <= boxRect.bottom
+            )
+            {
+                moveable.style.border = "5px orange dashed";
+                if (!selectedDoms.includes(moveable)) {
+                    selectedDoms.push(moveable);
+                }
+            } 
+            // else{
+            //     moveable.style.border = "none";
+            //     selectedDoms = selectedDoms.filter(e => e !== moveable);
+            // }
+        });
+})
+</script>

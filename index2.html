@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <td>id</td>
+                <td>아이디</td>
+                <td>이메일</td>
+                <td>주소</td>
+                <td>비번</td>
+                <td>삭제</td>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class ="id">1</td>
+                <td>topayc</td>
+                <td>topacy@naver.com</td>
+                <td>경기도</td>
+                <td>1111</td>
+                <td><button type = "button">삭제</button></td>
+            </tr>
+            <tr>
+                <td class ="id">1</td>
+                <td>topayc</td>
+                <td>topacy@naver.com</td>
+                <td>경기도</td>
+                <td>1111</td>
+                <td><button type = "button">삭제</button></td>
+            </tr>
+            <tr>
+                <td class ="id">1</td>
+                <td>topayc</td>
+                <td>topacy@naver.com</td>
+                <td>경기도</td>
+                <td>1111</td>
+                <td><button type = "button">삭제</button></td>
+            </tr>
+            <tr>
+                <td class ="id">1</td>
+                <td>topayc</td>
+                <td>topacy@naver.com</td>
+                <td>경기도</td>
+                <td>1111</td>
+                <td><button type = "button">삭제</button></td>
+            </tr>
+
+        </tbody>
+
+
+    </table>
+    <script>
+      
+        document.querySelectorAll("button").forEach(element => {
+            element.addEventListener("click", function(e){
+               alert(e.target.getBoundingClientRect().top);
+              
+            })
+        });
+    </script>
+</body>
+</html>

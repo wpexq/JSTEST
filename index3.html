@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="index.js"></script>
+    <style>
+
+       .aaaa {
+        background-color: rgb(39, 103, 103);
+       } 
+    </style>
+</head>
+<body>
+  
+    <div style = "height:500px;padding: 20px" id = "root" class="gggg"  >
+         red
+    </div>
+    
+
+ 
+
+  
+    <script>
+        
+        const users = [
+            { id: 1, name: "홍길동", email: "hong@example.com" },
+            { id: 2, name: "김철수", email: "kim@example.com" },
+            { id: 3, name: "이영희", email: "lee@example.com" }
+        ];
+
+        var container = document.getElementById('root');
+
+        users.forEach(user => {
+            var userDiv = document.createElement('div');
+            userDiv.style.marginTop = "10px";
+            userDiv.classList.add("aaaa");
+            userDiv.style.borderRadius = "10px";
+            userDiv.dataset.userId = user.id;
+          
+            userDiv.style.color = "black";
+            userDiv.style.border = "1px #aaaaaa solid"
+            userDiv.style.padding = "10px";
+            userDiv.dataset.userId = user.id;
+            userDiv.addEventListener("click", function(e){
+                alert(user.id + "세부 정보보실래요");
+            })
+
+            var userA = document.createElement('span');
+          
+            userA.innerHTML = user.name;
+            userDiv.appendChild(userA);
+
+            //button
+            var createBtn = document.createElement('button');
+            createBtn.innerText = "생성";
+            createBtn.classList.add('create');
+            createBtn.addEventListener("click", function(e){
+              e.stopPropagation();
+              alert( " 생성창이 나옵니다")
+             
+            });
+
+            //button
+            var delBtn = document.createElement('button');
+            delBtn.innerText = "삭제";
+            delBtn.classList.add('del');
+            delBtn.addEventListener("click", function(e){
+                e.stopPropagation();
+                alert(user.id + "삭제하십니까 ")
+              
+            });
+
+            //button
+            var modiBtn = document.createElement('button');
+            modiBtn.innerText = "수정";
+            modiBtn.classList.add('modify');
+            modiBtn.addEventListener("click", function(e){
+                e.stopPropagation();
+                alert(user.id + " 수정 모달창이 나옵니다.")
+              
+            });
+            
+            userDiv.appendChild(userA);
+            userDiv.appendChild(createBtn);
+            userDiv.appendChild(delBtn);
+            userDiv.appendChild(modiBtn);
+
+            container.appendChild(userDiv);
+        });
+
+        // document.querySelectorAll('.del').forEach(element => {
+        //     element.addEventListener("click", function(e){
+        //         alert(element.getAttribute("class"));
+        //         alert(element.parentElement.innerText);
+        //     })
+           
+        // })
+        
+        //div1.innerText ="<br>dfgdfgdfg"
+
+        // document.querySelector("#create").addEventListener('click', function(e){
+        //     alert(e.currentTarget.dataset.no)
+        //     })
+      
+    
+    </script>
+</body>
+</html>
